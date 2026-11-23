@@ -2,6 +2,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text ScoreUI;
     [SerializeField] private TMP_Text CoinUI;
     [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private GameObject pausePanel;
 
     [Header("Game Over UI")]
     [SerializeField] private TMP_Text finalScoreText;
@@ -44,6 +46,9 @@ public class GameManager : MonoBehaviour
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
+
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
 
         UpdateScoreUI();
         UpdateCoinUI();
@@ -79,12 +84,37 @@ public class GameManager : MonoBehaviour
         UpdateCoinUI();
     }
 
+    // Called by the Player Input Pause event
+    public void OnPauseInput(InputAction.CallbackContext context)
+    {
+        if (!context.performed)
+            return;
+
+        TogglePause();
+    }
+
+    public void TogglePause()
+    {
+        if (CurrentState == GameState.Playing)
+        {
+            PauseGame();
+        }
+        else if (CurrentState == GameState.Paused)
+        {
+            ResumeGame();
+        }
+    }
+
     public void PauseGame()
     {
         if (CurrentState != GameState.Playing)
             return;
 
         CurrentState = GameState.Paused;
+
+        if (pausePanel != null)
+            pausePanel.SetActive(true);
+
         Time.timeScale = 0f;
     }
 
@@ -92,6 +122,9 @@ public class GameManager : MonoBehaviour
     {
         if (CurrentState != GameState.Paused)
             return;
+
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
 
         CurrentState = GameState.Playing;
         Time.timeScale = 1f;
@@ -104,11 +137,11 @@ public class GameManager : MonoBehaviour
 
         CurrentState = GameState.GameOver;
 
-        // Play Game Over sound
         if (AudioManager.Instance != null)
-        {
             AudioManager.Instance.PlayGameOver();
-        }
+
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
 
         int finalScore = CurrentScore;
         int bestScore = PlayerPrefs.GetInt(BEST_SCORE_KEY, 0);
