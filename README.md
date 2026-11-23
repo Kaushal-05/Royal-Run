@@ -4,7 +4,7 @@ A 3D endless runner game built with **Unity 6**, where you guide a royal runner 
 
 ## 🎮 Game Preview
 
-![Royal Run Gameplay](Screenshots\gameplayrr.gif)
+![Royal Run Gameplay](Screenshots\gameplaygif.gif)
 
 ## ✨ Features
 
